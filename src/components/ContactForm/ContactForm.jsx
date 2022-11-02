@@ -1,12 +1,18 @@
 import { useState } from 'react';
-import PropTypes from 'prop-types';
+import { useDispatch, useSelector } from 'react-redux';
+import { getContacts } from 'redux/selectors';
+import {addContacts} from 'redux/slice'
+// import PropTypes from 'prop-types';
 import { nanoid } from 'nanoid';
 import styles from './ContactForm.module.css';
 
-export default function ContactForm({onAddContact}) {
+export default function ContactForm() {
     const [name, setName] = useState('');
     const [number, setNumber] = useState('');
 
+
+    const contacts = useSelector(getContacts);
+    const dispatch = useDispatch();
 
 
      const nameId = nanoid();
@@ -14,7 +20,7 @@ export default function ContactForm({onAddContact}) {
 
 
    const handleChangeForm = (e) => {
-        const { name, value } = e.target;
+        const { name, value } = e.currentTarget;
        
        switch (name) {
            case "name":
@@ -29,14 +35,32 @@ export default function ContactForm({onAddContact}) {
 }
     }
 
-     const handleFormSubmit = e => {
-         e.preventDefault()
+//      const handleFormSubmit = e => {
+//          e.preventDefault()
 
-             onAddContact({id: nanoid(), name, number});
+//              onAddContact({id: nanoid(), name, number});
          
+//              setName('')
+//              setNumber('')
+            
+// }
+    
+    const handleFormSubmit = e => {
+        e.preventDefault()
+
+        const addNewContact = { name, number, id: nanoid() };
+            //  onAddContact({id: nanoid(), name, number});
+        if (contacts.find(
+            item => name.toLocaleLowerCase() === item.name.toLocaleLowerCase())) {
+            alert(`${name} is already in contacts`)
+        } else {
+            dispatch(addContacts(addNewContact))
+      }
+        // setContacts(() => [...contacts, newContact ]);)
+        // addNewContact(name, number);
              setName('')
              setNumber('')
-            
+            console.log(name)
 }
 
 
@@ -79,7 +103,7 @@ export default function ContactForm({onAddContact}) {
 };
 
 ContactForm.propTypes = {
-    onAddContact: PropTypes.func.isRequired,
+    // onAddContact: PropTypes.func.isRequired,
     // onCheck: PropTypes.func.isRequired,
 };
 
